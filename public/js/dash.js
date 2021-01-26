@@ -28,9 +28,9 @@ option = {
             center : ['25%', '55%'],
             radius : '50%',
             min:0,
-            max:7,
+            max:30,
             endAngle:45,
-            splitNumber:7,
+            splitNumber:3,
             axisLine: { lineStyle: { color: [[0.29, 'lime'],[0.86, '#1e90ff'],[1, '#ff4500']], width: 2, shadowColor : '#fff', shadowBlur: 1 } },// line colors
             axisLabel: { textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 } },
             axisTick: { length :12, lineStyle: { color: 'auto', shadowColor : '#fff', shadowBlur: 1 } }, // color lines
@@ -165,7 +165,7 @@ option = {
 };
 
 var myChart = echarts.init(document.getElementById('main')); 
-
+/*
 var timeTicket = setInterval(function (){
     option.series[0].data[0].value = Math.round((Math.random()*100).toFixed(2) - 0);
     option.series[1].data[0].value = (Math.random()*7).toFixed(2) - 0;
@@ -173,13 +173,14 @@ var timeTicket = setInterval(function (){
     option.series[3].data[0].value = (Math.random()*2).toFixed(2) - 0;
     myChart.setOption(option,true);
 },2000)
-/*
+*/
+
 console.log('ok');
 const socket = io('http://127.0.0.1:8090');
 		socket.on('ecuData', function (data) {
             option.series[0].data[0].value = data.kph;
             option.series[1].data[0].value = data.rpm;
             option.series[3].data[0].value = data.coolantTemp;
+            myChart.setOption(option,true);
             // console.log(data);
         });
-*/

@@ -2,9 +2,11 @@
   "name": "mog",
   "version": "1.0.0",
   "description": "Unimog OBD2",
-  "main": "index.js",
+  "main": "server.js",
   "dependencies": {
-    "echarts": "^5.0.1"
+    "echarts": "^5.0.1",
+    "express": "^4.17.1",
+    "socket.io": "^3.1.0"
   },
   "devDependencies": {},
   "scripts": {
