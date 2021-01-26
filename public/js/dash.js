@@ -104,12 +104,12 @@ option = {
             data:[{value: 0.5, name: 'gas'}]
         },
         {
-            name:'水表',
+            name:'temp',
             type:'gauge',
             center : ['75%', '50%'],    
             radius : '50%',
             min:0,
-            max:2,
+            max:120,
             startAngle:315,
             endAngle:225,
             splitNumber:2,
@@ -134,8 +134,8 @@ option = {
                 formatter:function(v){
                     switch (v + '') {
                         case '0' : return 'H';
-                        case '1' : return 'Water';
-                        case '2' : return 'C';
+                        case '60' : return 'Water';
+                        case '120' : return 'C';
                     }
                 }
             },
@@ -159,7 +159,7 @@ option = {
             detail : {
                 show: false
             },
-            data:[{value: 0.5, name: 'gas'}]
+            data:[{value: 0.5, name: 'temp'}]
         }
     ]
 };
@@ -180,7 +180,7 @@ const socket = io('http://127.0.0.1:8090');
 		socket.on('ecuData', function (data) {
             option.series[0].data[0].value = data.kph;
             option.series[1].data[0].value = data.rpm;
-            option.series[3].data[0].value = data.coolantTemp;
+            option.series[3].data[0].value = 120 - data.coolantTemp ;
             myChart.setOption(option,true);
             // console.log(data);
         });

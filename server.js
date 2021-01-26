@@ -22,16 +22,16 @@ io.on('connection', function (socket) {
     setInterval(function(){
 
         if(rpm < 30){
-            rpm += 2
+            rpm += 1
         } else{
             rpm = 0
         }
-        if(kph < 120){
+        if(kph < 130){
             kph += 1
         } else{
             kph = 0
         }
-        if(coolantTemp < 210){
+        if(coolantTemp < 120){
             coolantTemp += 1
         } else{
             coolantTemp = 0
@@ -39,5 +39,5 @@ io.on('connection', function (socket) {
 
       socket.emit('ecuData', {'rpm':Math.floor(rpm),'kph':Math.floor(kph),'coolantTemp':Math.floor(coolantTemp)});
 
-    }, 1000);
+    }, 200);
 });
