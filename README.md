@@ -1,4 +1,4 @@
-# unimobd
+# UnimODB
 Require [Node.js](https://nodejs.org)!
 
 Execute the instructions in the root directory this project:
