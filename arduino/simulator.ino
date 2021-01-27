@@ -41,16 +41,25 @@ byte rxBuf[8];
 MCP_CAN CAN0(9);                                // Set CAN0 CS to pin 9
 
 
+#define SERIALDBG 1
+
 void setup()
 {
-  Serial.begin(115200);
-  while(!Serial);
+  #if SERIALDBG == 1
+    Serial.begin(115200);
+    while(!Serial);
+  #endif
   
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
-  if(CAN0.begin(MCP_STDEXT, CAN_500KBPS, MCP_20MHZ) == CAN_OK)
-    Serial.println("MCP2515 Initialized Successfully!");
-  else
-    Serial.println("Error Initializing MCP2515...");
+  if(CAN0.begin(MCP_STDEXT, CAN_500KBPS, MCP_20MHZ) == CAN_OK) {
+    #if SERIALDBG == 1
+      Serial.println("MCP2515 Initialized Successfully!");
+    #endif
+  } else {
+    #if SERIALDBG == 1
+      Serial.println("Error Initializing MCP2515...");
+    #endif
+  }
 
   #if standard == 1
     // Standard ID Filters
@@ -81,7 +90,9 @@ void setup()
 
   pinMode(CAN0_INT, INPUT);                          // Configuring pin for /INT input
   
-  Serial.println("OBD-II CAN Simulator");
+  #if SERIALDBG == 1
+    Serial.println("OBD-II CAN Simulator");
+  #endif
 }
 
 void loop()
@@ -478,7 +489,10 @@ void negAck(byte mode, byte reason){
 void unsupportedPrint(byte mode, byte pid){
   char msgstring[64];
   sprintf(msgstring, "Mode $%02X: Unsupported PID $%02X requested!", mode, pid);
-  Serial.println(msgstring);
+
+  #if SERIALDBG == 1
+    Serial.println(msgstring);
+  #endif
 }
 
 // Blocking example of ISO transport
@@ -551,7 +565,9 @@ void iso_tp(byte mode, byte pid, int len, byte *data){
     else{
       char msgstring[32];
       sprintf(msgstring,"Offset: 0x%04X\tLen: 0x%04X", offset, len);
-      Serial.println(msgstring);
+      #if SERIALDBG == 1
+        Serial.println(msgstring);
+      #endif
     }
 
 
