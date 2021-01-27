@@ -40,6 +40,8 @@ option = {
             detail : { borderColor: '#fff', shadowColor : '#fff', shadowBlur: 0, width: 80, height:30, offsetCenter: [25, '20%'], textStyle: { fontWeight: 'bolder', color: '#fff' } },
             data:[{value: 1.5, name: 'rpm'}]
         },
+        // diesel
+        /*
         {
             name:'diesel',
             type:'gauge',
@@ -50,29 +52,10 @@ option = {
             startAngle:135,
             endAngle:45,
             splitNumber:2,
-            axisLine: {            
-                lineStyle: {       
-                    color: [[0.2, 'lime'],[0.8, '#1e90ff'],[1, '#ff4500']],
-                    width: 2,
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                }
-            },
-            axisTick: {            
-                length :12,        
-                lineStyle: {       
-                    color: 'auto',
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                }
-            },
+            axisLine: { lineStyle: { color: [[0.2, 'lime'],[0.8, '#1e90ff'],[1, '#ff4500']], width: 2, shadowColor : '#fff', shadowBlur: 1 } },
+            axisTick: { length :12, lineStyle: { color: 'auto', shadowColor : '#fff', shadowBlur: 1 } },
             axisLabel: {
-                textStyle: {       
-                    fontWeight: 'bolder',
-                    color: '#fff',
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                },
+                textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 },
                 formatter:function(v){
                     switch (v + '') {
                         case '0' : return 'E';
@@ -81,28 +64,43 @@ option = {
                     }
                 }
             },
-            splitLine: {           
-                length :15,         
-                lineStyle: {       
-                    width:3,
-                    color: '#fff',
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                }
-            },
-            pointer: {
-                width:2,
-                shadowColor : '#fff', 
-                shadowBlur: 5
-            },
-            title : {
-                show: false
-            },
-            detail : {
-                show: false
-            },
+            splitLine: { length :15, lineStyle: { width:3, color: '#fff', shadowColor : '#fff', shadowBlur: 1 } },
+            pointer: { width:2, shadowColor : '#fff', shadowBlur: 5 },
+            title : { show: false },
+            detail : { borderColor: '#fff', shadowColor : '#fff', shadowBlur: 0, width: 20, height:7, offsetCenter: ['50%', '-20%'], textStyle: { fontSize: 14, fontWeight: 'bold', color: '#fff' } },
             data:[{value: 0.5, name: 'gas'}]
         },
+        */
+       // oil temp
+       {
+            name:'temp',
+            type:'gauge',
+            center : ['75%', '50%'],    
+            radius : '50%',
+            min:0,
+            max:120,
+            startAngle:135,
+            endAngle:45,
+            splitNumber:2,
+            axisLine: { lineStyle: { color: [[0.2, 'lime'],[0.8, '#1e90ff'],[1, '#ff4500']], width: 2, shadowColor : '#fff', shadowBlur: 1 } },
+            axisTick: { show: false },
+            axisLabel: {
+                textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 },
+                formatter:function(v){
+                    switch (v + '') {
+                        case '0' : return 'C';
+                        case '60' : return 'Oil °';
+                        case '120' : return 'H';
+                    }
+                }
+            },
+            splitLine: { length :15, lineStyle: { width:3, color: '#fff', shadowColor : '#fff', shadowBlur: 1 } },
+            pointer: { width:2, shadowColor : '#fff', shadowBlur: 0 },
+            title : { show: false },
+            detail : { borderColor: '#fff', shadowColor : '#fff', shadowBlur: 0, width: 20, height:7, offsetCenter: ['70%', '-40%'], textStyle: { fontSize: 14, fontWeight: 'bold', color: '#fff' } },
+            data:[{value: 0, name: 'temp'}]
+        },
+        // water temp
         {
             name:'temp',
             type:'gauge',
@@ -113,53 +111,23 @@ option = {
             startAngle:315,
             endAngle:225,
             splitNumber:2,
-            axisLine: {            
-                lineStyle: {       
-                    color: [[0.2, 'lime'],[0.8, '#1e90ff'],[1, '#ff4500']],
-                    width: 2,
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                }
-            },
-            axisTick: {            
-                show: false
-            },
+            axisLine: { lineStyle: { color: [[0.2, '#ff4500'],[0.8, '#1e90ff'],[1, 'lime']], width: 2, shadowColor : '#fff', shadowBlur: 1 } },
+            axisTick: { show: false },
             axisLabel: {
-                textStyle: {       
-                    fontWeight: 'bolder',
-                    color: '#fff',
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                },
+                textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 },
                 formatter:function(v){
                     switch (v + '') {
                         case '0' : return 'H';
-                        case '60' : return 'Water';
+                        case '60' : return 'Water °';
                         case '120' : return 'C';
                     }
                 }
             },
-            splitLine: {           
-                length :15,         
-                lineStyle: {       
-                    width:3,
-                    color: '#fff',
-                    shadowColor : '#fff', 
-                    shadowBlur: 1
-                }
-            },
-            pointer: {
-                width:2,
-                shadowColor : '#fff', 
-                shadowBlur: 0
-            },
-            title : {
-                show: false
-            },
-            detail : {
-                show: false
-            },
-            data:[{value: 0.5, name: 'temp'}]
+            splitLine: { length :15, lineStyle: { width:3, color: '#fff', shadowColor : '#fff', shadowBlur: 1 } },
+            pointer: { width:2, shadowColor : '#fff', shadowBlur: 0 },
+            title : { show: false },
+            detail : { borderColor: '#fff', shadowColor : '#fff', shadowBlur: 0, width: 20, height:7, offsetCenter: ['70%', '40%'], textStyle: { fontSize: 14, fontWeight: 'bold', color: '#fff' } },
+            data:[{value: 0, name: 'temp'}]
         }
     ]
 };
@@ -174,12 +142,12 @@ var timeTicket = setInterval(function (){
     myChart.setOption(option,true);
 },2000)
 */
-
-console.log('ok');
 const socket = io('http://127.0.0.1:8090');
 		socket.on('ecuData', function (data) {
+            console.log(data);
             option.series[0].data[0].value = data.kph;
             option.series[1].data[0].value = data.rpm;
+            option.series[2].data[0].value = data.oilTemp ;
             option.series[3].data[0].value = 120 - data.coolantTemp ;
             myChart.setOption(option,true);
             // console.log(data);

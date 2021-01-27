@@ -2,7 +2,7 @@ var path = require('path');
 var express = require('express');
 
 // All the values we are getting from the ECU
-var rpm, kph, coolantTemp = 0;
+var rpm = 0, kph = 0, coolantTemp = 0, oilTemp = 0;
 
 // Server part
 var app = express();
@@ -31,13 +31,16 @@ io.on('connection', function (socket) {
         } else{
             kph = 0
         }
-        if(coolantTemp < 120){
-            coolantTemp += 1
-        } else{
-            coolantTemp = 0
-        }
+        if (coolantTemp < 70) ++coolantTemp;
 
-      socket.emit('ecuData', {'rpm':Math.floor(rpm),'kph':Math.floor(kph),'coolantTemp':Math.floor(coolantTemp)});
+        if (oilTemp < 80) oilTemp = oilTemp + 0.4;
 
-    }, 200);
+      socket.emit('ecuData', {
+          'rpm':Math.floor(rpm),
+          'kph':Math.floor(kph),
+          'coolantTemp':Math.floor(coolantTemp),
+          'oilTemp':Math.floor(oilTemp)
+        });
+
+    }, 300);
 });
