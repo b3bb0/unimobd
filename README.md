@@ -11,3 +11,8 @@ npm start
 ```
 
 Now you can visit [127.0.0.1:8090](http://127.0.0.1:8090) and see some dash results
+
+
+What does it really looks like it?
+
+![Screenshot](https://github.com/b3bb0/unimobd/raw/main/docs/screen.png)
