@@ -31,8 +31,9 @@ SimpleDHT11 dht11(8); // PIN 8
 #define TEMPERATURENOMINAL 29
 
 
-// #define BCOEFFICIENT (usually 3000 - 4000)
-#define BCOEFFICIENT 3000
+// #define BETA COEFFICIENT (usually 3000 - 4000)
+// https://www.thinksrs.com/downloads/programs/therm%20calc/ntccalibrator/ntccalculator.html
+#define BCOEFFICIENT 3888
 
 void setup(void) {
   Serial.begin(115200);

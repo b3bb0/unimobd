@@ -29,25 +29,44 @@
 #include <mcp_can.h>
 #include <SPI.h>
 
-// Used for sensor timers
-const int fastSensorDelay = 500;
-unsigned long fastSensorTime = millis();
-const int slowSensorDelay = 1000 * 10;
-unsigned long slowSensorTime = millis();
+#define SERIALDBG 0
 
-#define BCOEFFICIENT 3000 // general thermal coifficient
+
+
+
+
+
+// What pin to connect the sensor to
+#define COOLANTPIN A0 
+
+// Other resistor before sensor
+#define COOLANTRESISTOR 1195
+
+#define COOLANTNOM 1840
+#define COOLANTTEMPNOM 25
+
+// #define BETA COEFFICIENT (usually 3000 - 4000)
+// https://www.thinksrs.com/downloads/programs/therm%20calc/ntccalibrator/ntccalculator.html
+#define COOLANTCOEFF 3888
+
+int CoolantTemp;
+
+unsigned long FastPreviousMillis = 0; // will store last time LED was updated
+const long FastInterval = 1000;
+
+unsigned long SlowPreviousMillis = 0; // will store last time LED was updated
+const long SlowInterval = 5000;
+
 
 // cabin temperature
 SimpleDHT11 dht11(8); // PIN 8
 byte CabinTemperature = 0;
 byte CabinHumidity    = 0;
 
-// coolant temperature
-int CoolantTemperature = 0;
-#define COOLANTPIN A0 // analog pin 0
-#define COOLANTSRESISTOR 1195
-#define COOLANTNOMINALVAL 1549
-#define COOLANTNOMINALCEL 29
+
+
+
+
 
 
 // used for CAM/OBD2 [start]
@@ -62,7 +81,6 @@ byte rxBuf[8];
 byte txData[8];                             // Set CAN0 CS to pin 10
 // used for CAM/OBD2 [stop]
 
-#define SERIALDBG 0
 
 void setup()
 {
@@ -115,11 +133,29 @@ void loop()
 }
 
 void updateSensors() {
-  // run slow sensors
   unsigned long currentMillis = millis();
-  
-  if (currentMillis - slowSensorTime >= slowSensorDelay) {
-    slowSensorTime = currentMillis;
+
+  if (currentMillis - FastPreviousMillis >= FastInterval) {
+    FastPreviousMillis = currentMillis;
+
+    float reading;
+    reading = analogRead(COOLANTPIN);
+    
+    float ohm;
+    ohm = COOLANTRESISTOR / ((1023 / reading)  - 1);
+
+    float temp;
+    temp = (1.0 / ((log(ohm / COOLANTNOM) / COOLANTCOEFF) + 1.0 / (COOLANTTEMPNOM + 273.15))) - 273.15 ;
+    
+    CoolantTemp = (int) temp;
+
+    Serial.print("CoolantTemp:"); 
+    Serial.println(CoolantTemp);
+  }
+
+  if (currentMillis - SlowPreviousMillis >= SlowInterval) {
+    SlowPreviousMillis = currentMillis;
+    
     int err = SimpleDHTErrSuccess;
     if ((err = dht11.read(&CabinTemperature, &CabinHumidity, NULL)) != SimpleDHTErrSuccess) {
       // Serial.print("Read DHT11 failed, err="); Serial.print(SimpleDHTErrCode(err));
@@ -130,17 +166,6 @@ void updateSensors() {
       Serial.print("CabinHumidity:"); 
       Serial.println((int)CabinHumidity);
     }
-  }
-
-  if (currentMillis - fastSensorTime >= fastSensorDelay) {
-    fastSensorTime = currentMillis;
-    int reading;
-    reading = analogRead(COOLANTPIN);
-    float ohm;
-    ohm = COOLANTSRESISTOR / ((1023 / reading)  - 1);
-    CoolantTemperature = (1.0 / ((log(ohm / COOLANTNOMINALVAL) / BCOEFFICIENT) + 1.0 / (COOLANTNOMINALCEL + 273.15))) - 273.15 ;
-    Serial.print("CoolantTemperature:"); 
-    Serial.println(CoolantTemperature);
   }
 }
 
@@ -508,7 +533,7 @@ int RPM_read() {
 }
 
 int coolant_read() {
-  return CoolantTemperature;
+  return CoolantTemp;
 }
 
 int intaketemp_read() {
