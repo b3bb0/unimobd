@@ -7,6 +7,22 @@
  * 
  * Written by Alberto bebbo Capponi - 27th Jan 2021
  * 
+ * 
+ * Arduino PINs    <->    MCP2515 CAN Bus Module  <->  OBD viecar
+ *                2   INT
+ *               10   CS
+ *               11   SI
+ *               12   SO
+ *               13   SCK
+ *                    VCC  (+5v)
+ *              GND   GND  (GND)
+ *                                                   4  (GND)
+ *                                                   5  (GND)
+ *                                           c3 (H)  6  (CAN BUS high)
+ *                                           j3 (L)  14 (CAN BUS low)
+ *                                                   16 (+12v)
+ * 
+ * 
  */
 
 #include <mcp_can.h>
@@ -38,7 +54,7 @@ byte rxBuf[8];
 
 // CAN Interrupt and Chip Select
 #define CAN0_INT 2                              // Set CAN0 INT to pin 2
-MCP_CAN CAN0(9);                                // Set CAN0 CS to pin 9
+MCP_CAN CAN0(10);                               // Set CAN0 CS to pin 10
 
 
 #define SERIALDBG 1
@@ -51,7 +67,8 @@ void setup()
   #endif
   
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
-  if(CAN0.begin(MCP_STDEXT, CAN_500KBPS, MCP_20MHZ) == CAN_OK) {
+  // if(CAN0.begin(MCP_STDEXT, CAN_500KBPS, MCP_20MHZ) == CAN_OK) {
+  if(CAN0.begin(MCP_STDEXT, CAN_500KBPS, MCP_16MHZ) == CAN_OK) {
     #if SERIALDBG == 1
       Serial.println("MCP2515 Initialized Successfully!");
     #endif
@@ -159,6 +176,9 @@ void obdReq(byte *data){
 
     // Engine RPM
     else if(pid == 0x0C){
+      /*
+      The response structure is the same as before. 0x41 to state the board is in mode 01, followed by 0x0C to show that the board is looking at the RPM parameter. The returned value of 0x0E 0x96 can then be converted into a decimal value of 3734. This is actually 4 times the actual RPM, as this value is listed in quarters of RPM. Once the value is divided by 4, we have an idiling RPM of 933.
+      */
       txData[0] = 0x04;
       txData[3] = 0x9C;
       txData[4] = 0x40;
@@ -386,6 +406,8 @@ void obdReq(byte *data){
 
     // VIN (17 to 20 Bytes) Uses ISO-TP
     else if(pid == 0x02){
+      // REFERENCE TABLE https://www.systutorials.com/ascii-table-and-ascii-code/
+      // 1ZVBP8AM7D5220181
       byte VIN[] = {(0x40 | mode), pid, 0x01, 0x31, 0x5a, 0x56, 0x42, 0x50, 0x38, 0x41, 0x4d, 0x37, 0x44, 0x35, 0x32, 0x32, 0x30, 0x31, 0x38, 0x31};
       iso_tp(mode, pid, 20, VIN);
     }

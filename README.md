@@ -14,3 +14,8 @@ npm start
 ```
 
 Now you can visit [127.0.0.1:8090](http://127.0.0.1:8090) and see some dash results
+
+
+For the ardunio OBD2 interface sun "simulator" (random data at the moment) using a MCP2515 CAN mobule
+
+![Screenshot](https://github.com/b3bb0/unimobd/raw/main/docs/wiring.png)
