@@ -9,49 +9,64 @@
  * 
  * 
  * Arduino PINs    <->    MCP2515 CAN Bus Module  <->  OBD viecar
- *                2   INT
- *               10   CS
- *               11   SI
- *               12   SO
- *               13   SCK
+ *                2 - INT
+ *               10 - CS
+ *               11 - SI
+ *               12 - SO
+ *               13 - SCK
  *                    VCC  (+5v)
- *              GND   GND  (GND)
- *                                                   4  (GND)
- *                                                   5  (GND)
- *                                           c3 (H)  6  (CAN BUS high)
- *                                           j3 (L)  14 (CAN BUS low)
+ *              GND - GND  (GND)
+ *                                                 -  4  (GND)
+ *                                                 -  5  (GND)
+ *                                          c3 (H) -  6  (CAN BUS high)
+ *                                          j3 (L) -  14 (CAN BUS low)
  *                                                   16 (+12v)
  * 
  * 
  */
 
+#include <SimpleDHT.h>
 #include <mcp_can.h>
 #include <SPI.h>
 
-#define PAD 0x00
+// Used for sensor timers
+const int fastSensorDelay = 500;
+unsigned long fastSensorTime = millis();
+const int slowSensorDelay = 1000 * 10;
+unsigned long slowSensorTime = millis();
 
+#define BCOEFFICIENT 3000 // general thermal coifficient
+
+// cabin temperature
+SimpleDHT11 dht11(8); // PIN 8
+byte CabinTemperature = 0;
+byte CabinHumidity    = 0;
+
+// coolant temperature
+int CoolantTemperature = 0;
+#define COOLANTPIN A0 // analog pin 0
+#define COOLANTSRESISTOR 1195
+#define COOLANTNOMINALVAL 1549
+#define COOLANTNOMINALCEL 29
+
+
+// used for CAM/OBD2 [start]
+#define PAD 0x00
 #define REPLY_ID 0x98DAF101
 #define LISTEN_ID 0x98DA01F1
-
-
-// CAN RX Variables
+#define CAN0_INT 2  // INT on PIN 2
+MCP_CAN CAN0(10);   // SI on PIN 10
 unsigned long rxId;
 byte dlc;
 byte rxBuf[8];
+byte txData[8];                             // Set CAN0 CS to pin 10
+// used for CAM/OBD2 [stop]
 
-byte txData[8];
-
-// CAN Interrupt and Chip Select
-#define CAN0_INT 2                              // Set CAN0 INT to pin 2
-MCP_CAN CAN0(10);                               // Set CAN0 CS to pin 10
-
-
-#define SERIALDBG 1
+#define SERIALDBG 0
 
 void setup()
 {
   #if SERIALDBG == 1
-    Serial.begin(115200);
     while(!Serial);
   #endif
   
@@ -83,6 +98,9 @@ void setup()
   
   #if SERIALDBG == 1
     Serial.println("OBD-II CAN Simulator");
+  #else
+    // start serial used for node interface
+    Serial.begin(115200);
   #endif
 }
 
@@ -91,6 +109,38 @@ void loop()
   if (!digitalRead(CAN0_INT)) {
     CAN0.readMsgBuf(&rxId, &dlc, rxBuf); // Get CAN data
     if (rxId == 0x98DB33F1) obdReq(rxBuf); // same requestID for most devices
+  }
+
+  updateSensors();
+}
+
+void updateSensors() {
+  // run slow sensors
+  unsigned long currentMillis = millis();
+  
+  if (currentMillis - slowSensorTime >= slowSensorDelay) {
+    slowSensorTime = currentMillis;
+    int err = SimpleDHTErrSuccess;
+    if ((err = dht11.read(&CabinTemperature, &CabinHumidity, NULL)) != SimpleDHTErrSuccess) {
+      // Serial.print("Read DHT11 failed, err="); Serial.print(SimpleDHTErrCode(err));
+      // Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(1000);
+    } else {
+      Serial.print("CabinTemperature:");
+      Serial.println((int)CabinTemperature);
+      Serial.print("CabinHumidity:"); 
+      Serial.println((int)CabinHumidity);
+    }
+  }
+
+  if (currentMillis - fastSensorTime >= fastSensorDelay) {
+    fastSensorTime = currentMillis;
+    int reading;
+    reading = analogRead(COOLANTPIN);
+    float ohm;
+    ohm = COOLANTSRESISTOR / ((1023 / reading)  - 1);
+    CoolantTemperature = (1.0 / ((log(ohm / COOLANTNOMINALVAL) / BCOEFFICIENT) + 1.0 / (COOLANTNOMINALCEL + 273.15))) - 273.15 ;
+    Serial.print("CoolantTemperature:"); 
+    Serial.println(CoolantTemperature);
   }
 }
 
@@ -458,7 +508,7 @@ int RPM_read() {
 }
 
 int coolant_read() {
-  return 80;
+  return CoolantTemperature;
 }
 
 int intaketemp_read() {
@@ -466,7 +516,7 @@ int intaketemp_read() {
 }
 
 int ambientTemp_read() {
-  return 31;
+  return (int)CabinTemperature;
 }
 
 int speed_read() {

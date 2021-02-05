@@ -1,4 +1,14 @@
 // DHT11 lib
+
+/*
+ * analog (resistance)  > temp C
+ * 604 (1722.63) - 609 (1757.86) = 25.6 C
+ * 577 (1549) ==> 29 C (averaged)
+ * 408 (792.78) - 413 (809.07) = 45.5 C
+ * 345 (608.08) - 350.00 (621.47) = 52.5 C
+ * 242 (370.28) - 244 (374.30) = 66.5 C
+ * 230 (346.60) - 235 (356.38) = 71.5 C
+ */
 #include <SimpleDHT.h>
 SimpleDHT11 dht11(8); // PIN 8
 
@@ -9,16 +19,23 @@ SimpleDHT11 dht11(8); // PIN 8
 #define SERIESRESISTOR 1195
 
 // resistance at 25 degrees C
-#define THERMISTORNOMINAL 1202      
+// #define THERMISTORNOMINAL 1722      
 
 // temp. for nominal resistance (almost always 25 C)
-#define TEMPERATURENOMINAL 23
+// #define TEMPERATURENOMINAL 26
+
+// #define THERMISTORNOMINAL 1068
+// #define TEMPERATURENOMINAL 37
+
+#define THERMISTORNOMINAL 1549
+#define TEMPERATURENOMINAL 29
+
 
 // #define BCOEFFICIENT (usually 3000 - 4000)
 #define BCOEFFICIENT 3000
 
 void setup(void) {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
  
 void loop(void) {
