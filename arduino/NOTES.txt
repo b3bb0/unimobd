@@ -1,0 +1,21 @@
+library to read RPMs
+    https://github.com/anru/fanspeed/blob/master/examples/FanSpeedDigitalPin/FanSpeedDigitalPin.pde
+
+
+EGT sensor library (MAX6675)
+    https://github.com/adafruit/MAX6675-library/blob/master/max6675.cpp
+
+
+air brake sensor:
+    0-300 PSI sensor: https://www.ebay.com.au/itm/DC5V-1-8NPT-Pressure-Transducer-Transmitter-Sensor-Stainless-Steel-Oil-Air-Water/203176441426?hash=item2f4e427652:g:VNwAAOSwdhNfq4oc
+
+
+BUILD CAM BUS SHIELD:
+    https://www.instructables.com/Yes-We-CAN-BUS-With-Arduino-in-30-Seconds
+    https://forum.arduino.cc/index.php?topic=315402.msg3013968#msg3013968
+
+VOLTAGE REGULATOR:
+    https://components101.com/sensors/voltage-sensor-module
+
+MULTIPLEXER READ 16 ANALOG VIA 74HC4067
+    https://tronixstuff.com/2013/08/05/part-review-74hc4067-16-channel-analog-multiplexerdemultiplexer/

@@ -8,23 +8,24 @@
  * Written by Alberto bebbo Capponi - 27th Jan 2021
  * 
  * 
- * Arduino PINs    <->    MCP2515 CAN Bus Module  <->  OBD viecar
- *                2 - INT
+ * Arduino PINs    <->    MCP2515 CAN Bus Module  <->  OBD viecar 
+ *                2 - INT 
  *               10 - CS
  *               11 - SI
  *               12 - SO
  *               13 - SCK
  *                    VCC  (+5v)
  *              GND - GND  (GND)
- *                                                 -  4  (GND)
+ *                                                 -  4  (GND)  OBD2 PINOUT > https://components101.com/sites/default/files/component_pin/OBD2-Connector-Pinout.png
  *                                                 -  5  (GND)
- *                                          c3 (H) -  6  (CAN BUS high)
- *                                          j3 (L) -  14 (CAN BUS low)
+ *                                          c3 (H) -  6  (CAN BUS high) - red cable
+ *                                          j3 (L) -  14 (CAN BUS low)  - white cable
  *                                                   16 (+12v)
  * 
- * 
+ * OBD2 details: https://en.wikipedia.org/wiki/OBD-II_PIDs#Fuel_Type_Coding
  */
 
+#include "max6675.h"
 #include <SimpleDHT.h>
 #include <mcp_can.h>
 #include <SPI.h>
@@ -32,37 +33,38 @@
 #define SERIALDBG 0
 
 
+// EGT temperature
+int EGTtemp;
+MAX6675 thermocouple(7, 6, 5); // PINS: 7 SCK/CLK , 6 CS , 5 DO/SO
 
-
-
-
-// What pin to connect the sensor to
-#define COOLANTPIN A0 
-
-// Other resistor before sensor
-#define COOLANTRESISTOR 1195
-
-#define COOLANTNOM 1840
-#define COOLANTTEMPNOM 25
-
-// #define BETA COEFFICIENT (usually 3000 - 4000)
-// https://www.thinksrs.com/downloads/programs/therm%20calc/ntccalibrator/ntccalculator.html
-#define COOLANTCOEFF 3888
-
+// coolat temperature
 int CoolantTemp;
-
-unsigned long FastPreviousMillis = 0; // will store last time LED was updated
-const long FastInterval = 1000;
-
-unsigned long SlowPreviousMillis = 0; // will store last time LED was updated
-const long SlowInterval = 5000;
-
+#define COOLANTPIN A5 // PIN Analog 5
+#define COOLANTRESISTOR 1195 // Resistor used
+#define COOLANTTEMPNOM 25 // nominal temperature 25C
+#define COOLANTNOM 1840 // nominal reading at 25C
+#define COOLANTCOEFF 3888 // beta coefficient (3k-4k range)
+// calculate beta coefficient via https://www.thinksrs.com/downloads/programs/therm%20calc/ntccalibrator/ntccalculator.html
 
 // cabin temperature
-SimpleDHT11 dht11(8); // PIN 8
+SimpleDHT11 dht11(9); // PIN 8
 byte CabinTemperature = 0;
 byte CabinHumidity    = 0;
 
+// fast temperature refresh timers
+unsigned long FastPreviousMillis = 0; // will store last time LED was updated
+const long FastInterval = 1000;
+
+// slow temperature refresh timers
+unsigned long SlowPreviousMillis = 0; // will store last time LED was updated
+const long SlowInterval = 5000;
+
+// voltage
+#define VOLTAGEPIN A0
+float VoltageOUT = 0.0;
+float VoltageIN = 0.0;
+int VoltageRead = 0;
+int Voltage00 = 0;
 
 
 
@@ -84,6 +86,10 @@ byte txData[8];                             // Set CAN0 CS to pin 10
 
 void setup()
 {
+
+  // wait for EGT to stabilize
+  delay(500);
+  
   #if SERIALDBG == 1
     while(!Serial);
   #endif
@@ -120,6 +126,8 @@ void setup()
     // start serial used for node interface
     Serial.begin(115200);
   #endif
+
+
 }
 
 void loop()
@@ -138,19 +146,31 @@ void updateSensors() {
   if (currentMillis - FastPreviousMillis >= FastInterval) {
     FastPreviousMillis = currentMillis;
 
+    // coolant
     float reading;
-    reading = analogRead(COOLANTPIN);
-    
     float ohm;
-    ohm = COOLANTRESISTOR / ((1023 / reading)  - 1);
-
     float temp;
+    reading = analogRead(COOLANTPIN);
+    ohm = COOLANTRESISTOR / ((1023 / reading)  - 1);
     temp = (1.0 / ((log(ohm / COOLANTNOM) / COOLANTCOEFF) + 1.0 / (COOLANTTEMPNOM + 273.15))) - 273.15 ;
     
     CoolantTemp = (int) temp;
-
     Serial.print("CoolantTemp:"); 
     Serial.println(CoolantTemp);
+
+    // EGT
+    EGTtemp = (int) thermocouple.readCelsius();
+    Serial.print("EGT:"); 
+    Serial.println(EGTtemp);
+
+    // Voltage
+    VoltageRead = analogRead(VOLTAGEPIN);
+    VoltageOUT = (VoltageRead * 5.0) / 1024.0;
+    VoltageIN = VoltageOUT / (7500.0/(30000.0+7500.0));
+    Voltage00 = (int) (VoltageIN * 100);
+    
+    Serial.print("Voltage:"); 
+    Serial.println(VoltageIN);
   }
 
   if (currentMillis - SlowPreviousMillis >= SlowInterval) {
@@ -206,7 +226,7 @@ void obdReq(byte *data){
       txData[6] = 0x01;
     }
 
-    // Supported PIDs 21-40: 01000100000000000000000000010000  (44 00 00 10) 
+    // Supported PIDs 41-60: 01000100000000000000000000010000  (44 00 00 10) 
     else if(pid == 0x40) {
       txData[0] = 0x06;
       txData[3] = 0x44;
@@ -238,7 +258,7 @@ void obdReq(byte *data){
     else if(pid == 0x5C) oilTemp_data(); // Engine oil temperature
 
     // Supported PIDs
-    else if(pid == 0x80 || pid == 0xA0 || pid == 0xA0 || pid == 0xC0 || pid == 0xE0){
+    else if(pid == 0x80 || pid == 0x60 || pid == 0xA0 || pid == 0xA0 || pid == 0xC0 || pid == 0xE0){
       txData[0] = 0x00;
       txData[3] = 0x00;
       txData[4] = 0x00;
@@ -520,7 +540,7 @@ void oilTemp_data() { // Engine oil temperature
 
 
 int voltage_read() {
-  return 1243; // 1243 = 12.43 v
+  return Voltage00; // 1243 = 12.43 v
 }
 
 int fueltank_read() {
