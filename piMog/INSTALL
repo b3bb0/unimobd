@@ -1,0 +1,74 @@
+# -------------------------------------------------------------------------------------------------- #
+###
+### General installation
+###
+
+apt update && apt dist-upgrade -y
+apt autoremove -y
+
+
+# -------------------------------------------------------------------------------------------------- #
+###
+### Install Node JS
+###
+
+cd /root
+wget 'https://raw.githubusercontent.com/nodesource/distributions/master/deb/setup_12.x'
+chmod +x setup_12.x 
+./setup_12.x 
+apt-get install -y nodejs
+
+
+# -------------------------------------------------------------------------------------------------- #
+###
+### Install ARDUINO stuff
+###
+
+cd /root
+curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+
+export PATH=$PATH:/root/bin
+echo "export PATH=$PATH:/root/bin" >> /root/.bashrc
+
+arduino-cli config init
+arduino-cli core update-index
+arduino-cli core install arduino:avr
+arduino-cli board listall
+
+arduino-cli lib install "MAX6675 library"
+arduino-cli lib install SimpleDHT
+
+cd /root/Arduino/libraries/
+wget https://github.com/coryjfowler/MCP_CAN_lib/archive/master.zip
+unzip master.zip
+rm -f master.zip
+cd /root/unimog
+
+mkdir /root/unimog
+cd /root/unimog
+arduino-cli sketch new ecuMog
+
+vi /root/unimog/ecuMog/ecuMog.ino 
+
+
+arduino-cli board list
+
+# arduino-cli compile --fqbn <FQBN> <SKETCH>
+arduino-cli compile --fqbn arduino:avr:uno ecuMog
+
+# flash arduino
+# arduino-cli upload -p <port> --fqbn <fqbn> <sketch>
+arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:uno ecuMog
+
+
+
+## For libraries:
+
+# search library: (eg max6675)
+arduino-cli lib search max6675
+
+# install library: (eg max6675)
+arduino-cli lib install "MAX6675 library"
+
+
+

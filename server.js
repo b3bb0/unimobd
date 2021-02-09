@@ -1,46 +1,75 @@
 var path = require('path');
+var sp = require("serialport");
 var express = require('express');
 
-// All the values we are getting from the ECU
-var rpm = 0, kph = 0, coolantTemp = 0, oilTemp = 0;
+var port = new sp("/dev/ttyACM0", { baudRate: 115200 });
+const Readline = sp.parsers.Readline;
+const parser = new Readline();
+port.pipe(parser);
+
+if (!Object.prototype.forEach) {
+	Object.defineProperty(Object.prototype, 'forEach', {
+		value: function (callback, thisArg) {
+			if (this == null) {
+				throw new TypeError('Not an object');
+			}
+			for (var key in this) {
+				if (this.hasOwnProperty(key)) {
+					callback.call(thisArg, this[key], key, this);
+				}
+			}
+		}
+	});
+}
 
 // Server part
 var app = express();
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-var server = app.listen(8090);
+var server = app.listen(8090,"0.0.0.0");
 console.log('Server listening on port 8090');
 
 // Socket.IO part
 var io = require('socket.io')(server);
 
+var connected = {};
+
 io.on('connection', function (socket) {
-  console.log('New client connected!');
-
-    //send data to client
-    setInterval(function(){
-
-        if(rpm < 30){
-            rpm += 1
-        } else{
-            rpm = 0
-        }
-        if(kph < 130){
-            kph += 1
-        } else{
-            kph = 0
-        }
-        if (coolantTemp < 70) ++coolantTemp;
-
-        if (oilTemp < 80) oilTemp = oilTemp + 0.4;
-
-      socket.emit('ecuData', {
-          'rpm':Math.floor(rpm),
-          'kph':Math.floor(kph),
-          'coolantTemp':Math.floor(coolantTemp),
-          'oilTemp':Math.floor(oilTemp)
-        });
-
-    }, 300);
+    var id = generateId();
+    connected[id] = socket;
+    console.log(id, "connected");
+    socket.on('disconnect', () => {
+        delete connected[socket];
+        console.log(id, "disconnected");
+    });
 });
+
+
+port.on("open",function() { console.log("\nPort open\n"); });
+port.on("close", function() { console.log("\nConnection lost\n"); });
+port.on("error", function() { console.log("\nConnection error\n"); });
+
+parser.on("data",function(data) {
+    var params = data;
+
+    var res = {};
+    res[params[0]] = params[1];
+    
+    connected.forEach( (socket) => {
+        socket.emit('ecuData', res);
+    })
+});
+
+function generateId(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
+
+ 
