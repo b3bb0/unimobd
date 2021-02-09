@@ -2,8 +2,8 @@ var path = require('path');
 var sp = require("serialport");
 var express = require('express');
 
-// var port = new sp("/dev/ttyACM0", { baudRate: 115200 });
-var port = new sp("/dev/tty.usbmodem14114101", { baudRate: 115200 });
+var port = new sp("/dev/ttyACM0", { baudRate: 115200 });
+// var port = new sp("/dev/tty.usbmodem14114101", { baudRate: 115200 });
 
 const Readline = sp.parsers.Readline;
 const parser = new Readline();
