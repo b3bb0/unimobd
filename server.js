@@ -51,7 +51,7 @@ port.on("close", function() { console.log("\nConnection lost\n"); });
 port.on("error", function() { console.log("\nConnection error\n"); });
 
 parser.on("data",function(data) {
-    var params = data;
+    var params = data.split(':');
 
     var res = {};
     res[params[0]] = params[1];
