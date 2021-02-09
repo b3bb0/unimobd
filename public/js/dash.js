@@ -142,7 +142,7 @@ var timeTicket = setInterval(function (){
     myChart.setOption(option,true);
 },2000)
 */
-const socket = io('http://127.0.0.1:8090');
+const socket = io('http://'+location.host);
 		socket.on('ecuData', function (data) {
             console.log(data);
             option.series[0].data[0].value = data.kph;
