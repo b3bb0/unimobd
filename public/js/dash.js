@@ -28,11 +28,20 @@ option = {
             center : ['25%', '55%'],
             radius : '50%',
             min:0,
-            max:30,
+            max:3100,
             endAngle:45,
             splitNumber:3,
             axisLine: { lineStyle: { color: [[0.29, 'lime'],[0.86, '#1e90ff'],[1, '#ff4500']], width: 2, shadowColor : '#fff', shadowBlur: 1 } },// line colors
-            axisLabel: { textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 } },
+            //axisLabel: { textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 } },
+            axisLabel: {
+                textStyle: { fontWeight: 'bolder', color: '#fff', shadowColor : '#fff', shadowBlur: 1 },
+                formatter:function(v){
+                    if (v>=0 && v<=900) return '0';
+                    if (v>=900 && v<=1900) return '1';
+                    if (v>=1900 && v<=2900) return '2';
+                    return '3';
+                }
+            },
             axisTick: { length :12, lineStyle: { color: 'auto', shadowColor : '#fff', shadowBlur: 1 } }, // color lines
             splitLine: { length :20, lineStyle: { width:3, color: '#fff', shadowColor : '#fff', shadowBlur: 3 } }, // splitters
             pointer: { width:5, shadowColor : '#fff', shadowBlur: 0 },
@@ -143,12 +152,17 @@ var timeTicket = setInterval(function (){
 },2000)
 */
 const socket = io('http://'+location.host);
-		socket.on('ecuData', function (data) {
-            console.log(data);
-            option.series[0].data[0].value = data.kph;
-            option.series[1].data[0].value = data.rpm;
-            option.series[2].data[0].value = data.oilTemp ;
-            option.series[3].data[0].value = 120 - data.coolantTemp ;
-            myChart.setOption(option,true);
-            // console.log(data);
-        });
+
+var rpmUpping = true;
+socket.on('ecuData', function (data) {
+    if (data.EGT) option.series[2].data[0].value = parseInt(data.EGT);
+    if (data.RPMs) option.series[1].data[0].value = parseInt(data.RPMs);
+    /*
+    option.series[0].data[0].value = data.kph;
+    option.series[1].data[0].value = data.rpm;
+    data.oilTemp ;
+    */
+    option.series[3].data[0].value = 120 - 1 ;
+    myChart.setOption(option,true);
+    console.log(data);
+});

@@ -2,7 +2,9 @@ var path = require('path');
 var sp = require("serialport");
 var express = require('express');
 
-var port = new sp("/dev/ttyACM0", { baudRate: 115200 });
+// var port = new sp("/dev/ttyACM0", { baudRate: 115200 });
+var port = new sp("/dev/tty.usbmodem14114101", { baudRate: 115200 });
+
 const Readline = sp.parsers.Readline;
 const parser = new Readline();
 port.pipe(parser);
@@ -48,7 +50,7 @@ io.on('connection', function (socket) {
 
 port.on("open",function() { console.log("\nPort open\n"); });
 port.on("close", function() { console.log("\nConnection lost\n"); });
-port.on("error", function() { console.log("\nConnection error\n"); });
+port.on("error", function(err) { console.log("\nConnection error\n",err); });
 
 parser.on("data",function(data) {
     var params = data.split(':');
