@@ -19,3 +19,4 @@ VOLTAGE REGULATOR:
 
 MULTIPLEXER READ 16 ANALOG VIA 74HC4067
     https://tronixstuff.com/2013/08/05/part-review-74hc4067-16-channel-analog-multiplexerdemultiplexer/
+    https://medium.com/jungletronics/74hc4067-demux-for-arduino-7f7892975edf

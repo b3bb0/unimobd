@@ -1,0 +1,68 @@
+<html>
+<head>
+</head>
+<body style="background-color: black;">
+    <canvas id="cvs" width="300" height="300">
+        [No canvas support]
+    </canvas>
+
+</body>
+<script src="https://www.rgraph.net/libraries/src/RGraph.common.core.js"></script>
+<script src="https://www.rgraph.net/libraries/src/RGraph.gauge.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+<script>
+
+$( document ).ready(function() {
+    new RGraph.Gauge({
+        id: 'cvs',
+        min: 0,
+        max: 120,
+        value: [60,80,100],
+        options: {
+            marginLeft: 15,
+            marginRight: 15,
+            marginTop: 15,
+            marginBottom: 15,
+
+            // Configure the top titles appearance
+            titleTop: 'Water Temp',
+            titleTopSize: 15,
+            titleTopFont: 'Impact',
+            titleTopColor: 'white',
+            titleTopItalic: true,
+            
+            // Configure the bottom titles appearance
+            titleBottom: '23 °C',
+            titleBottomSize: 14,
+            titleBottomItalic: true,
+            titleBottomFont: 'Impact',
+            titleBottomColor: '#ccc',
+            titleBottomPos: 0.4,
+
+            // The rest of the configuration for the Gauge chart - the needle,
+            // centerpin, tickmarks and the border
+            colorsRanges: [[100,120,'rgba(255,0,0,0.95)'], [60,90,'rgba(0,255,0,0.95'], [90,100,'rgba(255,255,0,0.95']],
+            backgroundColor: 'black',
+            backgroundGradient: true,
+            centerpinColor: '#000',
+            needleSize: [81, 70, 100],
+            needleColors: ['Gradient(transparent:white:white:white:white:white)', 'Gradient(transparent:#166:#166:#d66:#d66)', 'Gradient(transparent:#d66:#d66:#d66:#d66)'],
+            textColor: 'white',
+            tickmarksLargeColor: 'white',
+            tickmarksMediumColor: 'white',
+            tickmarksSmallColor: 'white',
+            borderOuter: '#666',
+            borderInner: '#333'
+        }
+    }).draw().responsive([
+        {maxWidth:null,css:{'float':'right'},parentCss:{textAlign:'none','float': 'right'}},
+        {maxWidth:600,css:{'float':'none'},parentCss:{textAlign:'center','float': 'none'}}
+    ]);
+
+    console.log( "ready!" );
+});
+</script>
+</html>

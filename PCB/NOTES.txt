@@ -1,0 +1,19 @@
+
+# MY PCB
+    https://easyeda.com/editor#id=13f803e88a824323a512d45b17f3d73b|7900d5f5600f43e09987ff436f67a287|5a2029518e864a3180e6bf8ea557d59f|58cf219535ac41b3a0655e2c22eea0ec
+
+# EasyEDA tutorial
+    https://www.youtube.com/watch?v=utBQqcuOt9U
+
+# Arduino MEGA page + schematics
+    https://content.arduino.cc/assets/MEGA2560_Rev3e_sch.pdf
+    https://store.arduino.cc/usa/mega-2560-r3
+    https://www.arduino.cc/en/uploads/Main/arduino-mega-schematic.pdf
+
+# ISP Programmer
+    https://arduino.stackexchange.com/questions/55498/when-using-an-arduino-as-an-isp-is-the-capacitor-required-or-not
+    https://www.arduino.cc/en/Tutorial/BuiltInExamples/ArduinoISP
+    https://forum.arduino.cc/index.php?topic=24143.0
+    https://arduinoinfo.mywikis.net/wiki/MegaQuickRef
+    https://www.instructables.com/DIY-Arduino-Mega-2560/
+    https://forum.arduino.cc/index.php?topic=24320.0

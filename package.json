@@ -4,6 +4,7 @@
   "description": "Unimog OBD2",
   "main": "server.js",
   "dependencies": {
+    "canvas-gauges": "^2.1.7",
     "echarts": "^5.0.1",
     "express": "^4.17.1",
     "socket.io": "^3.1.0"

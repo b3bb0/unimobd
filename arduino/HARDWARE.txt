@@ -1,0 +1,12 @@
+
+# installed
+    - MCP2515 CAN Bus Module (TJA1050 Receiver SPI)
+    - DHT11 (Temperature and Relative Humidity Sensor Module)
+    - 1/8 NPT Sensor Sender 0°C to 150°  (1 wire )   >>> https://www.ebay.com.au/itm/Car-Oil-Water-Temperature-Temp-1-8-NPT-Sensor-Sender-0-C-to-150-Firm-Neu/274660256707?_trkparms=aid%3D111001%26algo%3DREC.SEED%26ao%3D1%26asc%3D20160908105057%26meid%3D875da55a8be040c98678f827be7d5440%26pid%3D100675%26rk%3D1%26rkt%3D15%26mehot%3Dnone%26sd%3D274660256707%26itm%3D274660256707%26pmt%3D0%26noa%3D1%26pg%3D2380057%26brand%3DUnbranded&_trksid=p2380057.c100675.m4236&_trkparms=pageci%3Abf9d462a-6836-11eb-91d3-46f19c705b38%7Cparentrq%3A75acc0301770a77dc9f45261fffb3400%7Ciid%3A1
+
+# to install
+    - MAX6675 Module + K Type Thermocouple Temperature
+    - MCP23017 (I2C 16 Bit I/O Expander IC)
+    - OBDII OBD2 16 Pin Connector Plug Female
+
+    - 16CH Analog Digital MUX Breakout Board CD74HC4067 Precise module Arduino
